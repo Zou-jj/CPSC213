@@ -3,13 +3,11 @@ import static java.lang.System.out;
 public class Endianness {
 
   public static int bigEndianValue (Byte[] mem) {
-    // TODO
-    return 0;
+    return mem[3]+256*mem[2]+65536*mem[1]+16777216*mem[0];
   }
   
   public static int littleEndianValue (Byte[] mem) {
-    // TODO
-    return 0;
+    return mem[0]+256*mem[1]+65536*mem[2]+16777216*mem[3];
   }
   
   public static void main (String[] args) {
