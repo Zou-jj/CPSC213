@@ -3,17 +3,37 @@ import static java.lang.System.out;
 public class Endianness {
 
   public static int bigEndianValue (Byte[] mem) {
+    boolean borrow2 = false;
+    boolean borrow1 = false;
+    boolean borrow0 = false;
+    int mem3 = 0;
+    int mem2 = 0;
+    int mem1 = 0;
+    int mem0 = 0;
+    
     if (mem[0] >= 0){
-      return mem[3]+256*mem[2]+65536*mem[1]+16777216*mem[0];
-    } else {
-      boolean borrow2 = false;
-      boolean borrow1 = false;
-      boolean borrow0 = false;
-      int mem3 = 0;
-      int mem2 = 0;
-      int mem1 = 0;
-      int mem0 = 0;
+      mem0 = mem[0];
 
+      if (mem[1] < 0){
+        mem1 = 256+mem[1];
+      } else {
+        mem1 = mem[1];
+      }
+
+      if (mem[2] < 0){
+        mem2 = 256+mem[2];
+      } else {
+        mem2 = mem[2];
+      }
+
+      if (mem[3] < 0){
+        mem3 = 256+mem[3];
+      } else {
+        mem3 = mem[3];
+      }
+
+      return mem3+256*mem2+65536*mem1+16777216*mem0;
+    } else {
       if (mem[3] > 0){
         mem3 = 255 - (mem[3] - 1);
       } else if (mem[3] == 0){
@@ -83,74 +103,7 @@ public class Endianness {
     mem[2] = mem[1];
     mem[1] = temp;
 
-    if (mem[3] >= 0){
-      return mem[0]+256*mem[1]+65536*mem[2]+16777216*mem[3];
-    } else {
-      boolean borrow2 = false;
-      boolean borrow1 = false;
-      boolean borrow0 = false;
-      int mem3 = 0;
-      int mem2 = 0;
-      int mem1 = 0;
-      int mem0 = 0;
-
-      if (mem[3] > 0){
-        mem3 = 255 - (mem[3] - 1);
-      } else if (mem[3] == 0){
-        mem3 = 255;
-        borrow2 = true;
-      } else {
-        mem3 = -mem[3];
-      }
-
-      if (borrow2){
-        if (mem[2] > 0){
-          mem2 = 255 - (mem[2] - 1);
-        } else if (mem[2] == 0){
-          mem2 = 255;
-          borrow1 = true;
-        } else {
-          mem2 = -mem[2];
-        }
-      } else {
-        if (mem[2] > 0){
-          mem2 = 255 - mem[2];
-        } else if (mem[2] == 0){
-          mem2 = 255;
-          borrow1 = true;
-        } else {
-          mem2 = -1-mem[2];
-        }
-      }
-
-      if (borrow1){
-        if (mem[1] > 0){
-          mem1 = 255 - (mem[1] - 1);
-        } else if (mem[1] == 0){
-          mem1 = 255;
-          borrow0 = true;
-        } else {
-          mem1 = -mem[1];
-        }
-      } else {
-        if (mem[1] > 0){
-          mem1 = 255 - mem[1];
-        } else if (mem[1] == 0){
-          mem1 = 255;
-          borrow0 = true;
-        } else {
-          mem1 = -1-mem[1];
-        }
-      }
-
-      if (borrow0){
-        mem0 = -mem[0];
-      } else {
-        mem0 = -1-mem[0];
-      }
-
-      return -(mem3+256*mem2+65536*mem1+16777216*mem0);
-    }
+    return bigEndianValue(mem);
   }
   
   public static void main (String[] args) {
