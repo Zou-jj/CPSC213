@@ -6,15 +6,150 @@ public class Endianness {
     if (mem[0] >= 0){
       return mem[3]+256*mem[2]+65536*mem[1]+16777216*mem[0];
     } else {
-      return 0-(-mem[3])-256*(-1-mem[2])-65536*(-1-mem[1])-16777216*(255-mem[0]);
+      boolean borrow2 = false;
+      boolean borrow1 = false;
+      boolean borrow0 = false;
+      int mem3 = 0;
+      int mem2 = 0;
+      int mem1 = 0;
+      int mem0 = 0;
+
+      if (mem[3] > 0){
+        mem3 = 255 - (mem[3] - 1);
+      } else if (mem[3] == 0){
+        mem3 = 255;
+        borrow2 = true;
+      } else {
+        mem3 = -mem[3];
+      }
+
+      if (borrow2){
+        if (mem[2] > 0){
+          mem2 = 255 - (mem[2] - 1);
+        } else if (mem[2] == 0){
+          mem2 = 255;
+          borrow1 = true;
+        } else {
+          mem2 = -mem[2];
+        }
+      } else {
+        if (mem[2] > 0){
+          mem2 = 255 - mem[2];
+        } else if (mem[2] == 0){
+          mem2 = 255;
+          borrow1 = true;
+        } else {
+          mem2 = -1-mem[2];
+        }
+      }
+
+      if (borrow1){
+        if (mem[1] > 0){
+          mem1 = 255 - (mem[1] - 1);
+        } else if (mem[1] == 0){
+          mem1 = 255;
+          borrow0 = true;
+        } else {
+          mem1 = -mem[1];
+        }
+      } else {
+        if (mem[1] > 0){
+          mem1 = 255 - mem[1];
+        } else if (mem[1] == 0){
+          mem1 = 255;
+          borrow0 = true;
+        } else {
+          mem1 = -1-mem[1];
+        }
+      }
+
+      if (borrow0){
+        mem0 = -mem[0];
+      } else {
+        mem0 = -1-mem[0];
+      }
+
+      return -(mem3+256*mem2+65536*mem1+16777216*mem0);
     }
   }
   
   public static int littleEndianValue (Byte[] mem) {
+    Byte temp = 0;
+
+    temp = mem[3];
+    mem[3] = mem[0];
+    mem[0] = temp;
+    temp = mem[2];
+    mem[2] = mem[1];
+    mem[1] = temp;
+
     if (mem[3] >= 0){
       return mem[0]+256*mem[1]+65536*mem[2]+16777216*mem[3];
     } else {
-      return 0-(-mem[0])-256*(-1-mem[1])-65536*(-1-mem[2])-16777216*(255-mem[3]);
+      boolean borrow2 = false;
+      boolean borrow1 = false;
+      boolean borrow0 = false;
+      int mem3 = 0;
+      int mem2 = 0;
+      int mem1 = 0;
+      int mem0 = 0;
+
+      if (mem[3] > 0){
+        mem3 = 255 - (mem[3] - 1);
+      } else if (mem[3] == 0){
+        mem3 = 255;
+        borrow2 = true;
+      } else {
+        mem3 = -mem[3];
+      }
+
+      if (borrow2){
+        if (mem[2] > 0){
+          mem2 = 255 - (mem[2] - 1);
+        } else if (mem[2] == 0){
+          mem2 = 255;
+          borrow1 = true;
+        } else {
+          mem2 = -mem[2];
+        }
+      } else {
+        if (mem[2] > 0){
+          mem2 = 255 - mem[2];
+        } else if (mem[2] == 0){
+          mem2 = 255;
+          borrow1 = true;
+        } else {
+          mem2 = -1-mem[2];
+        }
+      }
+
+      if (borrow1){
+        if (mem[1] > 0){
+          mem1 = 255 - (mem[1] - 1);
+        } else if (mem[1] == 0){
+          mem1 = 255;
+          borrow0 = true;
+        } else {
+          mem1 = -mem[1];
+        }
+      } else {
+        if (mem[1] > 0){
+          mem1 = 255 - mem[1];
+        } else if (mem[1] == 0){
+          mem1 = 255;
+          borrow0 = true;
+        } else {
+          mem1 = -1-mem[1];
+        }
+      }
+
+      if (borrow0){
+        mem0 = -mem[0];
+      } else {
+        mem0 = -1-mem[0];
+      }
+
+      return -(mem3+256*mem2+65536*mem1+16777216*mem0);
     }
   }
   
