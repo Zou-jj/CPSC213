@@ -37,7 +37,7 @@ public class Endianness {
       if (mem[3] > 0){
         mem3 = 255 - (mem[3] - 1);
       } else if (mem[3] == 0){
-        mem3 = 255;
+        mem3 = 0;
         borrow2 = true;
       } else {
         mem3 = -mem[3];
@@ -47,7 +47,7 @@ public class Endianness {
         if (mem[2] > 0){
           mem2 = 255 - (mem[2] - 1);
         } else if (mem[2] == 0){
-          mem2 = 255;
+          mem2 = 0;
           borrow1 = true;
         } else {
           mem2 = -mem[2];
@@ -67,7 +67,7 @@ public class Endianness {
         if (mem[1] > 0){
           mem1 = 255 - (mem[1] - 1);
         } else if (mem[1] == 0){
-          mem1 = 255;
+          mem1 = 0;
           borrow0 = true;
         } else {
           mem1 = -mem[1];
