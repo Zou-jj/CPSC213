@@ -111,9 +111,12 @@ static int is_within_heap_range(struct heap *h, void *addr) {
  * the coalesced block.
  */
 static void *coalesce(struct heap *h, void *first_block_start) {
-  
-  /* TO BE COMPLETED BY THE STUDENT. */
-  return NULL;
+  if (is_within_heap_range(h, first_block_start) && is_within_heap_range(h, get_next_block(first_block_start))){
+    if (!block_is_in_use(first_block_start) && !block_is_in_use(get_next_block(first_block_start))){
+      set_block_header(first_block_start, get_block_size(first_block_start) + get_block_size(get_next_block(first_block_start)), 0);
+    }
+  }
+  return first_block_start;
 }
 
 /*
@@ -123,9 +126,11 @@ static void *coalesce(struct heap *h, void *first_block_start) {
  * of HEADER_SIZE.
  */
 static int get_size_to_allocate(int user_size) {
-  
-  /* TO BE COMPLETED BY THE STUDENT. */
-  return 0;
+  if (user_size % HEADER_SIZE == 0){
+    return user_size + 2 * HEADER_SIZE;
+  } else {
+    return user_size - (user_size % HEADER_SIZE) + 3 * HEADER_SIZE;
+  }
 }
 
 /*
@@ -138,9 +143,20 @@ static int get_size_to_allocate(int user_size) {
  * block as in use. Returns the payload of the block marked as in use.
  */
 static void *split_and_mark_used(struct heap *h, void *block_start, int needed_size) {
-
-  /* TO BE COMPLETED BY THE STUDENT. */
-  return NULL;
+  int temp_start_size = get_block_size(block_start);
+  if (get_block_size(block_start) - needed_size - 3 * HEADER_SIZE >= 0){
+    set_block_header(block_start, needed_size, 1);
+    int temp = temp_start_size - needed_size;
+    set_block_header(get_next_block(block_start), temp_start_size - needed_size, 0);
+    int temp2 = get_block_size(get_next_block(block_start));
+    // if (temp2 < 0){
+    //   printf("no");
+    // }
+    return get_payload(block_start);
+  } else {
+    set_block_header(block_start, get_block_size(block_start), 1);
+    return get_payload(block_start);
+  }
 }
 
 /*
@@ -168,8 +184,14 @@ struct heap *heap_create(unsigned int size)
  * block with the previous and the next block, if they are also free.
  */
 void myfree(struct heap *h, void *payload) {
-  
-  /* TO BE COMPLETED BY THE STUDENT. */
+  void *temp_block_start = get_block_start(payload);
+  set_block_header(temp_block_start, get_block_size(temp_block_start), 0);
+  // printf("%d", get_block_size(temp_block_start));
+  temp_block_start = coalesce(h, temp_block_start);
+  coalesce(h, get_previous_block(temp_block_start));
+  // if (is_within_heap_range(h, get_previous_block(temp_block_start)) && !block_is_in_use(get_previous_block(temp_block_start))){
+  //   coalesce(h, get_previous_block(temp_block_start));
+  // }
 }
 
 /*
@@ -178,7 +200,11 @@ void myfree(struct heap *h, void *payload) {
  * block large enough to satisfy the request exists.
  */
 void *mymalloc(struct heap *h, unsigned int user_size) {
-  
-  /* TO BE COMPLETED BY THE STUDENT. */
+  for (void *blk = h->start; is_within_heap_range(h, blk); blk = get_next_block(blk)){
+    int temp = get_block_size(blk);
+    if (!block_is_in_use(blk) && get_block_size(blk) >= get_size_to_allocate(user_size)){
+      return split_and_mark_used(h, blk, get_size_to_allocate(user_size));
+    }
+  }
   return NULL;
 }

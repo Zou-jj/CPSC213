@@ -7,6 +7,7 @@
 /* This is the testing harness for mymalloc */
 
 #define MB (1024 * 1024)
+#define KB (1024)
 
 struct testfunc;
 typedef int (*testfunc_t)(struct testfunc *tf);
@@ -297,6 +298,49 @@ int test_coalesce2(struct testfunc *tf) {
   return 0;
 }
 
+int test_mytest(struct testfunc *tf) {
+  /* Simple test to exercise coalescing and splitting */
+  /* step 1: allocate three big chunks to fill the heap */
+  int sizes[COALESCE1_COUNT] = {0};
+  void *ptrs[COALESCE1_COUNT] = {0};
+  for(int i=0; i<COALESCE1_COUNT; i++) {
+    sizes[i] = COALESCE1_SIZE;
+    void *ptr = mymalloc(tf->heap, sizes[i]);
+    if(0 != check_alloc(tf, ptr, sizes[i], ptrs, sizes, COALESCE1_COUNT)) {
+      return -1;
+    }
+    ptrs[i] = ptr;
+  }
+
+  /* step 2: free two adjacent chunks and allocate them as one block */
+  myfree(tf->heap, ptrs[1]);
+  ptrs[1] = NULL;
+  myfree(tf->heap, ptrs[2]);
+  ptrs[2] = NULL;
+
+  int size1 = COALESCE1_SIZE * 2;
+  void *ptr1 = mymalloc(tf->heap, size1);
+  if(0 != check_alloc(tf, ptr1, size1, ptrs, sizes, COALESCE1_COUNT)) {
+    return -1;
+  }
+
+  /* step 3: free two more chunks and allocate them as one block */
+  myfree(tf->heap, ptr1);
+  ptr1 = NULL;
+  myfree(tf->heap, ptrs[0]);
+  ptrs[0] = NULL;
+
+  int size2 = COALESCE1_SIZE * 3;
+  void *ptr2 = mymalloc(tf->heap, size2);
+  if(0 != check_alloc(tf, ptr2, size2, ptrs, sizes, COALESCE1_COUNT)) {
+    return -1;
+  }
+  myfree(tf->heap, ptr2);
+  ptr2 = NULL;
+
+  return 0;
+}
+
 static struct testfunc testfuncs[] = {
   { "sanity", 1 * MB, test_sanity },
   { "freelist1", 1 * MB, test_freelist1 },
@@ -306,6 +350,7 @@ static struct testfunc testfuncs[] = {
   { "random", 8 * MB, test_random },
   { "coalesce1", 1 * MB, test_coalesce1 },
   { "coalesce2", 1 * MB, test_coalesce2 },
+  { "mytest", 1 * KB, test_mytest },
   { NULL, 0, NULL },
 };
 
