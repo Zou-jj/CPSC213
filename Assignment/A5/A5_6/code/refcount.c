@@ -14,7 +14,7 @@ void* rc_malloc (int nbytes) {
   int* ref_count = malloc (nbytes + 8);
   // initialize ref count to 1;
   *ref_count = 1;
-  printf("%d\n", *ref_count);
+  // printf("%d\n", *ref_count);
   // return pointer to client portion of allocation
   return ((void*) ref_count) + 8;
 }
@@ -24,7 +24,7 @@ void  rc_keep_ref(void* p) {
   int* ref_count = p - 8;
   // increment ref count
   (*ref_count) ++;
-  printf("%d\n", *ref_count);
+  // printf("%d\n", *ref_count);
 }
 
 void  rc_free_ref(void* p) {
@@ -32,7 +32,7 @@ void  rc_free_ref(void* p) {
   int* ref_count = p - 8;
   // decrement ref count
   (*ref_count) --;
-  printf("%d\n", *ref_count);
+  // printf("%d\n", *ref_count);
   // free allocation when ref count is 0
   if (*ref_count == 0)
     free (ref_count);

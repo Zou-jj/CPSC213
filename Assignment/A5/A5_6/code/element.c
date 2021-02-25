@@ -29,13 +29,13 @@ struct element *element_new(int num, char *value) {
 /** Delete an element, freeing the memory associated with it. */
 void element_delete(struct element *e) {
   int rc = check_rc(e);
-  printf("rc: %d\n", rc);
-  if(rc == 1){
-    printf("nice!");
+  // printf("rc: %d\n", rc);
+  if(rc == 2){
+    // printf("nice!");
     free(e->value);
     rc_free_ref(e);
   } else {
-    printf("deleting: %s\n", e->value);
+    // printf("deleting: %s\n", e->value);
     rc_free_ref(e);
   }
 }
@@ -61,6 +61,6 @@ int  check_rc(void* p) {
   // get pointer to ref count from client pointer
   int* ref_count = p - 8;
   // increment ref count
-  printf("%d\n", *ref_count);
+  // printf("%d\n", *ref_count);
   return *ref_count;
 }
