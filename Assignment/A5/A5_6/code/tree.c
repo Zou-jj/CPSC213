@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tree.h"
+#include "refcount.h"
 
 struct tree {
   struct tree_node *root;
@@ -47,6 +48,7 @@ static struct tree_node *tree_insert_node_helper(struct tree_node **np, struct e
       return tree_insert_node_helper(&(*np)->right, e);
   } else {
     *np = malloc(sizeof(**np));
+    rc_keep_ref(e);
     (*np)->elem = e;
     (*np)->left = (*np)->right = NULL;
     return *np;

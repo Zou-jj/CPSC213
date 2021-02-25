@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
+#include "refcount.h"
 
 struct list {
   struct list_node *head;
@@ -40,6 +41,7 @@ void list_delete(struct list *l) {
  */
 struct list_node *list_add_element(struct list *l, struct element *e) {
   struct list_node *n = malloc(sizeof(*n));
+  // rc_keep_ref(e);
   n->elem = e;
   n->prev = n->next = NULL;
 
