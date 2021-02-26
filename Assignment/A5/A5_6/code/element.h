@@ -11,6 +11,9 @@ struct element;
  */
 struct element *element_new(int num, char *value);
 
+/** Return current rc value*/ 
+int  check_rc(void* p);
+
 /** Delete an element, freeing the memory associated with it. */
 void element_delete(struct element *e);
 
