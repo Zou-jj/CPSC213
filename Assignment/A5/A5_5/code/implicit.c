@@ -144,14 +144,11 @@ static int get_size_to_allocate(int user_size) {
  */
 static void *split_and_mark_used(struct heap *h, void *block_start, int needed_size) {
   int temp_start_size = get_block_size(block_start);
-  if (get_block_size(block_start) - needed_size - 3 * HEADER_SIZE >= 0){
+  if (get_block_size(block_start) - needed_size >= 3 * HEADER_SIZE){
     set_block_header(block_start, needed_size, 1);
-    int temp = temp_start_size - needed_size;
+    // int temp = temp_start_size - needed_size;
     set_block_header(get_next_block(block_start), temp_start_size - needed_size, 0);
-    int temp2 = get_block_size(get_next_block(block_start));
-    // if (temp2 < 0){
-    //   printf("no");
-    // }
+    // int temp2 = get_block_size(get_next_block(block_start));
     return get_payload(block_start);
   } else {
     set_block_header(block_start, get_block_size(block_start), 1);
@@ -186,12 +183,10 @@ struct heap *heap_create(unsigned int size)
 void myfree(struct heap *h, void *payload) {
   void *temp_block_start = get_block_start(payload);
   set_block_header(temp_block_start, get_block_size(temp_block_start), 0);
-  // printf("%d", get_block_size(temp_block_start));
   temp_block_start = coalesce(h, temp_block_start);
-  coalesce(h, get_previous_block(temp_block_start));
-  // if (is_within_heap_range(h, get_previous_block(temp_block_start)) && !block_is_in_use(get_previous_block(temp_block_start))){
-  //   coalesce(h, get_previous_block(temp_block_start));
-  // }
+  if (is_within_heap_range(h, get_previous_block(temp_block_start))){
+    coalesce(h, get_previous_block(temp_block_start));
+  }
 }
 
 /*
@@ -202,8 +197,9 @@ void myfree(struct heap *h, void *payload) {
 void *mymalloc(struct heap *h, unsigned int user_size) {
   for (void *blk = h->start; is_within_heap_range(h, blk); blk = get_next_block(blk)){
     int temp = get_block_size(blk);
-    if (!block_is_in_use(blk) && get_block_size(blk) >= get_size_to_allocate(user_size)){
-      return split_and_mark_used(h, blk, get_size_to_allocate(user_size));
+    int needed_size = get_size_to_allocate(user_size);
+    if (!block_is_in_use(blk) && get_block_size(blk) >= needed_size){
+      return split_and_mark_used(h, blk, needed_size);
     }
   }
   return NULL;
