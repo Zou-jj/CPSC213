@@ -30,7 +30,7 @@ struct element *element_new(int num, char *value) {
 void element_delete(struct element *e) {
   int rc = check_rc(e);
   // printf("rc: %d\n", rc);
-  if(rc == 2){
+  if(rc == 1){
     // printf("nice!");
     free(e->value);
     rc_free_ref(e);
