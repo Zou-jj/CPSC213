@@ -1,23 +1,32 @@
-.pos 0x100
+ld  $a, r0
+    ld  $0, r1
+    ld  $0, r2
 
-    # a = 3
-    ld $a, r0           # r0 = address of a
-    ld 0(r0), r0        # r0 = a = &A
-    ld 16(r0), r0       # r0 = z
-    ld 16(r0), r0       # r0 = j.z = &B
-    ld 12(r0), r0       # r0 = j.y[2]
-    ld $b, r1           # r1 = address of b
-    st r0, 20(r1)       # b.k = rhs
+L0: ld  (r0, r1, 4), r4
+    inc r1
+    add r4, r2
+    ld  $s, r4
+    st r2, (r4)
+    ld $i, r4
+    st r1, (r4)
+    ld  $-10, r3
+    add r1, r3
+    beq r3, L1
+    br  L0
 
-    halt 
+L1: halt
 
-.pos 0x200
-# Data area
-
-a:  .long 0             # a
-p:  .long 0             # p
-b:  .long 1             # b[0]
-    .long 2             # b[1]
-    .long 3             # b[2]
-    .long 4             # b[3]
-    .long 5             # b[4]
+.pos 0x1000
+a:  .long 1
+    .long 2
+    .long 3
+    .long 4
+    .long 5
+    .long 7
+    .long 8
+    .long 9
+    .long 10
+    .long 11
+    .long 324
+i:  .long 0
+s:  .long 0
