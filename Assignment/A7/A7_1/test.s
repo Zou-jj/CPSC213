@@ -10,7 +10,7 @@ start:
 
 .pos 0x2000
 code:
-  db "/bin/sh", 0
+  nop
 
 .pos 0x3000
 # base address to load virus code at. Your virus code must work no matter what address this is.
